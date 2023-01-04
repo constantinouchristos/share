@@ -129,5 +129,26 @@ class NT_Xent(nn.Module):
     return indexes_slected,matching_indx_bc
     
     
+loss_to_average = 0
+total_contrastive = 0
+
+for ii in indexes_slected:
+
+    indexes_in = indexes_slected[ii]
+    indexes_back = matching_indx_bc[ii]
+
+    temp_projections_in = projections_in[indexes_in,:]
+    temp_projections_back = projections_back[indexes_back,:]
+
+    temp_b_size = temp_projections_in.shape[0]
+
+    contrastive_critirion = NT_Xent(batch_size=temp_b_size,temperature=0.7,world_size=1)
+    contrastive_loss = contrastive_critirion(temp_projections_in,temp_projections_back)
+
+    total_contrastive += contrastive_loss
+
+    loss_to_average += 1
+
+total_contrastive = total_contrastive / loss_to_average
     
     
